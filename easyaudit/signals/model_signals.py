@@ -231,7 +231,7 @@ def m2m_changed(sender, instance, action, reverse, model, pk_set, using, **kwarg
 
                 # add reverse M2M changes to event. must use json lib because
                 # django serializers ignore extra fields.
-                tmp_repr = json.loads(object_json_repr, cls=UUIDSerializer)
+                tmp_repr = json.loads(object_json_repr)
 
                 m2m_rev_field = _m2m_rev_field_name(instance._meta.concrete_model, model)
                 related_instances = getattr(instance, m2m_rev_field).all()
@@ -240,7 +240,7 @@ def m2m_changed(sender, instance, action, reverse, model, pk_set, using, **kwarg
                 tmp_repr[0]['m2m_rev_model'] = force_str(model._meta)
                 tmp_repr[0]['m2m_rev_pks'] = related_ids
                 tmp_repr[0]['m2m_rev_action'] = action
-                object_json_repr = json.dumps(tmp_repr)
+                object_json_repr = json.dumps(tmp_repr, cls=UUIDSerializer)
             else:
                 if action == 'post_add':
                     event_type = CRUDEvent.M2M_ADD
