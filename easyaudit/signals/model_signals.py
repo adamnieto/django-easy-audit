@@ -1,6 +1,6 @@
 import json
 import logging
-
+import uuid
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -238,7 +238,7 @@ def m2m_changed(sender, instance, action, reverse, model, pk_set, using, **kwarg
 
                 m2m_rev_field = _m2m_rev_field_name(instance._meta.concrete_model, model)
                 related_instances = getattr(instance, m2m_rev_field).all()
-                related_ids = [r.pk for r in related_instances]
+                related_ids = [str(r.pk) if isinstance(r.pk, uuid.UUID) else r.pk for r in related_instances]
 
                 tmp_repr[0]['m2m_rev_model'] = force_str(model._meta)
                 tmp_repr[0]['m2m_rev_pks'] = related_ids
