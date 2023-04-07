@@ -232,7 +232,7 @@ def m2m_changed(sender, instance, action, reverse, model, pk_set, using, **kwarg
                 # django serializers ignore extra fields.
                 try:
                     tmp_repr = json.loads(object_json_repr)
-                except TypeError as err:
+                except Exception as err:
                     tmp_repr = json.loads('{\"n/a\":""}')
 
                 m2m_rev_field = _m2m_rev_field_name(instance._meta.concrete_model, model)
