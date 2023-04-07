@@ -9,24 +9,6 @@ from django.utils import timezone
 from django.utils.encoding import smart_str
 from json import JSONEncoder
 
-class UUIDSerializer(JSONEncoder):
-
-    def default(self, value) -> str:
-        """JSON serialization conversion function."""
-
-        # If it's an IP, which is not normally
-        # serializable, convert to string.
-        if isinstance(value, UUID):
-            return str(value)
-
-        # Here you can have other handling for your
-        # UUIDs, or datetimes, or whatever else you
-        # have.
-
-        # Otherwise, default to super
-        return super(UUIDSerializer, self).default(value)
-
-
 def get_field_value(obj, field):
     """
     Gets the value of a given model instance field.
