@@ -18,10 +18,19 @@ from easyaudit.models import CRUDEvent
 from easyaudit.settings import REGISTERED_CLASSES, UNREGISTERED_CLASSES, \
     WATCH_MODEL_EVENTS, CRUD_DIFFERENCE_CALLBACKS, LOGGING_BACKEND, \
     DATABASE_ALIAS, CUSTOM_USER_PRIMARY_KEY
-from easyaudit.utils import get_m2m_field_name, model_delta, UUIDSerializer
+from easyaudit.utils import get_m2m_field_name, model_delta
 
 logger = logging.getLogger(__name__)
 audit_logger = import_string(LOGGING_BACKEND)()
+
+old_default = JSONEncoder.default
+
+def new_default(self, obj):
+    if isinstance(obj, UUID):
+        return str(obj)
+    return old_default(self, obj)
+
+JSONEncoder.default = new_default
 
 
 def should_audit(instance):
@@ -240,7 +249,7 @@ def m2m_changed(sender, instance, action, reverse, model, pk_set, using, **kwarg
                 tmp_repr[0]['m2m_rev_model'] = force_str(model._meta)
                 tmp_repr[0]['m2m_rev_pks'] = related_ids
                 tmp_repr[0]['m2m_rev_action'] = action
-                object_json_repr = json.dumps(tmp_repr, cls=UUIDSerializer)
+                object_json_repr = json.dumps(tmp_repr)
             else:
                 if action == 'post_add':
                     event_type = CRUDEvent.M2M_ADD
