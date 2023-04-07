@@ -19,6 +19,7 @@ from easyaudit.settings import REGISTERED_CLASSES, UNREGISTERED_CLASSES, \
     WATCH_MODEL_EVENTS, CRUD_DIFFERENCE_CALLBACKS, LOGGING_BACKEND, \
     DATABASE_ALIAS, CUSTOM_USER_PRIMARY_KEY
 from easyaudit.utils import get_m2m_field_name, model_delta
+from django.core.serializers.json import DjangoJSONEncoder
 
 logger = logging.getLogger(__name__)
 audit_logger = import_string(LOGGING_BACKEND)()
@@ -231,7 +232,7 @@ def m2m_changed(sender, instance, action, reverse, model, pk_set, using, **kwarg
                 # add reverse M2M changes to event. must use json lib because
                 # django serializers ignore extra fields.
                 try:
-                    tmp_repr = json.loads(object_json_repr)
+                    tmp_repr = json.loads(object_json_repr, cls=DjangoJSONEncoder)
                 except Exception as err:
                     tmp_repr = json.loads('{\"n/a\":""}')
 
@@ -242,7 +243,7 @@ def m2m_changed(sender, instance, action, reverse, model, pk_set, using, **kwarg
                 tmp_repr[0]['m2m_rev_model'] = force_str(model._meta)
                 tmp_repr[0]['m2m_rev_pks'] = related_ids
                 tmp_repr[0]['m2m_rev_action'] = action
-                object_json_repr = json.dumps(tmp_repr)
+                object_json_repr = json.dumps(tmp_repr, cls=DjangoJSONEncoder)
             else:
                 if action == 'post_add':
                     event_type = CRUDEvent.M2M_ADD
