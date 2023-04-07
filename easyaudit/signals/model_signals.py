@@ -19,6 +19,8 @@ from easyaudit.settings import REGISTERED_CLASSES, UNREGISTERED_CLASSES, \
     WATCH_MODEL_EVENTS, CRUD_DIFFERENCE_CALLBACKS, LOGGING_BACKEND, \
     DATABASE_ALIAS, CUSTOM_USER_PRIMARY_KEY
 from easyaudit.utils import get_m2m_field_name, model_delta
+from json import JSONEncoder
+from uuid import UUID
 
 logger = logging.getLogger(__name__)
 audit_logger = import_string(LOGGING_BACKEND)()
