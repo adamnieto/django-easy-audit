@@ -232,9 +232,10 @@ def m2m_changed(sender, instance, action, reverse, model, pk_set, using, **kwarg
                 # add reverse M2M changes to event. must use json lib because
                 # django serializers ignore extra fields.
                 try:
-                    tmp_repr = json.loads(object_json_repr, cls=DjangoJSONEncoder)
+                    tmp_repr = json.loads(object_json_repr)
                 except Exception as err:
-                    tmp_repr = json.loads('{\"n/a\":""}')
+                    # fallback if any error fails
+                    tmp_repr = json.loads('[{\"n/a\":""}]')
 
                 m2m_rev_field = _m2m_rev_field_name(instance._meta.concrete_model, model)
                 related_instances = getattr(instance, m2m_rev_field).all()
