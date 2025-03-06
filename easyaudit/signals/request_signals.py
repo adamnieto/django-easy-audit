@@ -81,8 +81,9 @@ def request_started_handler(sender, **kwargs):
                     user = get_user_model().objects.get(**{CUSTOM_USER_PRIMARY_KEY:user_id})
                 except:
                     user = None
-
-
+    # This is just a ping to the "/" path that can occur with elastic beanstalk so it doesn't make sense to log. 
+    if getattr(user, CUSTOM_USER_PRIMARY_KEY, None) is None and path == "/":
+        return
     # may want to wrap this in an atomic transaction later
     request_event = audit_logger.request({
         'url': path,
